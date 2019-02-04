@@ -2,7 +2,7 @@ library(ggpubr)
 library(ggplot2)
 library(e1071)
 
-df <- read.csv('/home/mr_malviya/Desktop/Data_Science_2/ls')
+df <- read.csv('/home/mr_malviya/Desktop/Data_Science_2/AutoMpgDataSet/auto-mpg.csv')
 
 ## transferring cylinders data into new dataframe
 cylinders <- df[c("cylinders")]
