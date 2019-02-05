@@ -88,6 +88,8 @@ abline(lm(df$mpg ~ df$weight))
 plot(df$acceleration , df$mpg)
 abline(lm(df$mpg ~ acceleration))
 
+plot(df$model.year , df$mpg)
+abline(lm(df$mpg ~ df$model.year))
 
 
 
