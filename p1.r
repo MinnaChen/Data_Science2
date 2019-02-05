@@ -65,6 +65,37 @@ df <- df[-c(2:9)]
 ##adding the new columns with the means in missing values to the dataframe
 df <- cbind(df,cylinders, displacement, horsepower, weight, acceleration, model_year, origin)
 
+
+### Getting scatter plots of each of the variables 
+scatter.smooth(x = df$displacement, y = df$mpg, main = 'mpg vs displacement')
+scatter.smooth(x = df$horsepower, y = df$mpg, main = 'mpg vs horsepower')
+scatter.smooth(x = df$cylinders, y = df$mpg, main = 'mpg vs cylinders')
+scatter.smooth(x = df$weight, y = df$mpg, main = 'mpg vs weight')
+scatter.smooth(x = df$accerleration, y = df$mpg, main = 'mpg vs acceleration')
+scatter.smooth(x = df$model.year, y = df$mpg, main = 'mpg vs model.year')
+
+
+## plotting linear regression line
+plot(df$displacement, df$mpg)
+abline(lm(df$mpg ~ df$displacement))
+
+plot(df$cylinders, df$mpg)
+abline(lm(df$mpg ~ df$cylinders))
+
+plot(df$weight, df$mpg)
+abline(lm(df$mpg ~ df$weight))
+
+plot(df$acceleration , df$mpg)
+abline(lm(df$mpg ~ acceleration))
+
+
+
+
+
+
+
+
+
 ##forward selection from here
 fwd_model <- lm(mpg ~ 1,  data = df) 
 step(fwd_model, direction = "forward", scope = formula(mpg ~ cylinders + displacement + horsepower + weight + acceleration + model.year + origin))
