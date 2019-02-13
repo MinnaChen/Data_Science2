@@ -1,6 +1,7 @@
 library(ggpubr)
 library(ggplot2)
 library(e1071)
+library(dpylr)
 
 df <- read.csv('/home/mr_malviya/Desktop/Data_Science_2/ls')
 
@@ -101,8 +102,26 @@ abline(lm(df$mpg ~ df$model.year))
 ##forward selection from here
 fwd_model <- lm(mpg ~ 1,  data = df) 
 step(fwd_model, direction = "forward", scope = formula(mpg ~ cylinders + displacement + horsepower + weight + acceleration + model.year + origin))
-
-
 summary(fwd_model)
+## features obtained from forward selection mpg ~ weight + model.year + horsepower + origin + acceleration
+
+#creating model with just cylinder
+lin_mod <- lm(mpg ~ cylinders, data = df)
+
+#cross-validation from here
+train_control <- trainControl(method = "cv", number = 10)
+cv_model <- train(mpg ~ cylinders, data = df, trControl = train_control, method = "lm"
+
+                  
+#creating a new dataframe to store rsquare adjusted_rsquard and cv rsquared
+error_df <- data.frame("r_sq" = double(0), "adj_r_sq" = double(0), "cv_r_sq" = double(0))
+add_row(error_df, r_sq = summary(lin_mod)$r.squared, adj_r_sq = summary(lin_mod)$adj.r.squared, cv_r_sq = summary(cv_model)$r.squared)
+
+
+
+
+
+
+
 
 
