@@ -74,7 +74,12 @@ error_df <- add_row(error_df, r_sq = summary(lin_mod6)$r.squared, adj_r_sq = sum
 error_df <- add_row(error_df, r_sq = summary(lin_mod7)$r.squared, adj_r_sq = summary(lin_mod7)$adj.r.squared, cv_r_sq = mean(cv_model7$resample$Rsquared))
 
 
-
+#plot of r square, adjusted r square and r square cross-validation
+plot(error_df$r_sq, type = 'l', col = 'red', main = "ERROR PLOT", ylab = "Errors", ylim = c(0.7,1))
+lines(error_df$adj_r_sq,  col = 'green' )
+lines(error_df$cv_r_sq,  col = 'blue')
+legend(5,0.8, legend = c("R Squared","Adj R Squared","R Squared CV"), 
+       col = c("red","green","blue"), lty = 1:2, cex = 0.8)
 
 
 
