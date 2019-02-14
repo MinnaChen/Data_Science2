@@ -5,66 +5,26 @@ library(dpylr)
 
 df <- read.csv('/home/mr_malviya/Desktop/Data_Science_2/ls')
 
-## transferring cylinders data into new dataframe
-cylinders <- df[c("cylinders")]
-## replacing missing values with mean of the data
-for (i in 1:ncol(cylinders)){
-    cylinders[is.na(cylinders[,i]),i] <- mean(cylinders[,i], na.rm = TRUE)
-}
+#checking the structure of the df
+str(df)
 
+#making a copy of the original dataframe
+auto_df <- df
 
-## transferring displacement data into new dataframe
-displacement <- df[c("displacement")]
-## replacing missing values with mean of the data
-for (i in 1:ncol(displacement)){
-    displacement[is.na(displacement[,i]),i] <- mean(displacement[,i], na.rm = TRUE)
-}
+#replacing the missing values by mean
+auto_df$cylinders[is.na(auto_df$cylinders)] <- mean(auto_df$cylinders, na.rm = TRUE)
+auto_df$displacement[is.na(auto_df$displacement)] <- mean(auto_df$displacement, na.rm = TRUE)
+auto_df$weight[is.na(auto_df$weight)] <- mean(auto_df$weight, na.rm = TRUE)
+auto_df$acceleration[is.na(auto_df$acceleration)] <- mean(auto_df$acceleration, na.rm = TRUE)
+auto_df$model.year[is.na(auto_df$model.year)] <- mean(auto_df$model.year, na.rm = TRUE)
+auto_df$origin[is.na(auto_df$origin)] <- mean(auto_df$origin, na.rm = TRUE)
 
+#converting the horsepower into numeric
+auto_df$horsepower <- as.numeric(as.character(df$horsepower))
+auto_df$horsepower[is.na(auto_df$horsepower)] <- mean(auto_df$horsepower, na.rm = TRUE)
 
-## transferring horsepower data into new dataframe
-horsepower <- df[c("horsepower")]
-## replacing missing values with mean of the data
-for (i in 1:ncol(horsepower)){
-    horsepower[is.na(horsepower[,i]),i] <- mean(horsepower[,i], na.rm = TRUE)
-}
-
-## transferring weight data into new dataframe
-weight <- df[c("weight")]
-## replacing missing values with mean of the data
-for (i in 1:ncol(weight)){
-    weight[is.na(weight[,i]),i] <- mean(weight[,i], na.rm = TRUE)
-}
-
-
-## transferring acceleration data into new dataframe
-acceleration <- df[c("acceleration")]
-## replacing missing values with mean of the data
-for (i in 1:ncol(acceleration)){
-    acceleration[is.na(acceleration[,i]),i] <- mean(acceleration[,i], na.rm = TRUE)
-}
-
-
-## transferring model year data into new dataframe
-model_year <- df[c("model.year")]
-## replacing missing values with mean of the data
-for (i in 1:ncol(model_year)){
-    model_year[is.na(model_year[,i]),i] <- mean(model_year[,i], na.rm = TRUE)
-}
-
-
-## transferring origin data into new dataframe
-origin <- df[c("origin")]
-## replacing missing values with mean of the data
-for (i in 1:ncol(origin)){
-    origin[is.na(origin[,i]),i] <- mean(origin[,i], na.rm = TRUE)
-}
-
-
-#dropping each column except for the mpg
-df <- df[-c(2:9)]
-
-##adding the new columns with the means in missing values to the dataframe
-df <- cbind(df,cylinders, displacement, horsepower, weight, acceleration, model_year, origin)
+#removing car names from the data
+auto_df <- auto_df[c(-9)]
 
 
 ### Getting scatter plots of each of the variables 
@@ -76,46 +36,42 @@ scatter.smooth(x = df$accerleration, y = df$mpg, main = 'mpg vs acceleration')
 scatter.smooth(x = df$model.year, y = df$mpg, main = 'mpg vs model.year')
 
 
-## plotting linear regression line
-plot(df$displacement, df$mpg)
-abline(lm(df$mpg ~ df$displacement))
-
-plot(df$cylinders, df$mpg)
-abline(lm(df$mpg ~ df$cylinders))
-
-plot(df$weight, df$mpg)
-abline(lm(df$mpg ~ df$weight))
-
-plot(df$acceleration , df$mpg)
-abline(lm(df$mpg ~ acceleration))
-
-plot(df$model.year , df$mpg)
-abline(lm(df$mpg ~ df$model.year))
-
-
-
-
-
-
-
-
-##forward selection from here
-fwd_model <- lm(mpg ~ 1,  data = df) 
+##forward selection 
+fwd_model <- lm(mpg ~ 1,  data = auto_df) 
 step(fwd_model, direction = "forward", scope = formula(mpg ~ cylinders + displacement + horsepower + weight + acceleration + model.year + origin))
 summary(fwd_model)
 ## features obtained from forward selection mpg ~ weight + model.year + horsepower + origin + acceleration
 
 #creating model with just cylinder
-lin_mod <- lm(mpg ~ cylinders, data = df)
+lin_mod1 <- lm(mpg ~ weight, data = auto_df)
+lin_mod2 <- lm(mpg ~ weight + model.year, data = auto_df)
+lin_mod3 <- lm(mpg ~ weight + model.year + horsepower, data = auto_df)
+lin_mod4 <- lm(mpg ~ weight + model.year + horsepower + origin, data = auto_df)
+lin_mod5 <- lm(mpg ~ weight + model.year + horsepower + origin + acceleration, data = auto_df)
+lin_mod6 <- lm(mpg ~ weight + model.year + horsepower + origin + acceleration + cylinders, data = auto_df)
+lin_mod7 <- lm(mpg ~ weight + model.year + horsepower + origin + acceleration + cylinders + displacement, data = auto_df)
+
 
 #cross-validation from here
 train_control <- trainControl(method = "cv", number = 10)
-cv_model <- train(mpg ~ cylinders, data = df, trControl = train_control, method = "lm"
+cv_model1 <- train(mpg ~ weight, data = auto_df, trControl = train_control, method = "lm")
+cv_model2 <- train(mpg ~ weight + model.year, data = auto_df, trControl = train_control, method = "lm")
+cv_model3 <- train(mpg ~ weight + model.year + horsepower, data = auto_df, trControl = train_control, method = "lm")
+cv_model4 <- train(mpg ~ weight + model.year + horsepower + origin, data = auto_df, trControl = train_control, method = "lm")
+cv_model5 <- train(mpg ~ weight + model.year + horsepower + origin + acceleration, data = auto_df, trControl = train_control, method = "lm")
+cv_model6 <- train(mpg ~ weight + model.year + horsepower + origin + acceleration + cylinders, data = auto_df, trControl = train_control, method = "lm")
+cv_model7 <- train(mpg ~ weight + model.year + horsepower + origin + acceleration + cylinders + displacement, data = auto_df, trControl = train_control, method = "lm")
 
                   
 #creating a new dataframe to store rsquare adjusted_rsquard and cv rsquared
 error_df <- data.frame("r_sq" = double(0), "adj_r_sq" = double(0), "cv_r_sq" = double(0))
-add_row(error_df, r_sq = summary(lin_mod)$r.squared, adj_r_sq = summary(lin_mod)$adj.r.squared, cv_r_sq = summary(cv_model)$r.squared)
+error_df <- add_row(error_df, r_sq = summary(lin_mod1)$r.squared, adj_r_sq = summary(lin_mod1)$adj.r.squared, cv_r_sq = mean(cv_model1$resample$Rsquared))
+error_df <- add_row(error_df, r_sq = summary(lin_mod2)$r.squared, adj_r_sq = summary(lin_mod2)$adj.r.squared, cv_r_sq = mean(cv_model2$resample$Rsquared))
+error_df <- add_row(error_df, r_sq = summary(lin_mod3)$r.squared, adj_r_sq = summary(lin_mod3)$adj.r.squared, cv_r_sq = mean(cv_model3$resample$Rsquared))
+error_df <- add_row(error_df, r_sq = summary(lin_mod4)$r.squared, adj_r_sq = summary(lin_mod4)$adj.r.squared, cv_r_sq = mean(cv_model4$resample$Rsquared))
+error_df <- add_row(error_df, r_sq = summary(lin_mod5)$r.squared, adj_r_sq = summary(lin_mod5)$adj.r.squared, cv_r_sq = mean(cv_model5$resample$Rsquared))
+error_df <- add_row(error_df, r_sq = summary(lin_mod6)$r.squared, adj_r_sq = summary(lin_mod6)$adj.r.squared, cv_r_sq = mean(cv_model6$resample$Rsquared))
+error_df <- add_row(error_df, r_sq = summary(lin_mod7)$r.squared, adj_r_sq = summary(lin_mod7)$adj.r.squared, cv_r_sq = mean(cv_model7$resample$Rsquared))
 
 
 
