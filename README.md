@@ -7,15 +7,15 @@ Implement different regression Technique such as:
 * Quad Regression
 * Reponse Surface
 
-Implement forward selection and cross validation on these regression technique and observe differnce in R square adjusted
-R square and R square cross validation using graph.
+Implement forward selection and cross validation on these regression technique and observe differnce in R square 
+adjusted R square and cross validated R square using graph.
 
 # How to run:
 Scalation:
 * Go inside Regression folder using terminal
-* run sbt server $ sbt
-* To compile sbt:Regression > compile
-* To run sbt:Regression > run
+* Run sbt server inisde the Regression folder:     $ sbt
+* To compile:     sbt:Regression > compile
+* To run:         sbt:Regression > run
 
 # DataSet used: 
 
