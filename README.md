@@ -17,6 +17,13 @@ Scalation:
 * To compile:     sbt:Regression > compile
 * To run:         sbt:Regression > run
 
+R :
+* Copy and paste the dataset's .csv files on your local directory.
+* cd to the directory you have pasted all the files to.
+* Open R Studio or go to the R shell by $R from the same directory.
+* Copy and paste the R script in the submission.
+
+
 # DataSet used: 
 
 * Auto MPG: https://archive.ics.uci.edu/ml/datasets/Auto+MPG 
