@@ -17,9 +17,12 @@ Scalation:
 * To compile:     sbt:Regression > compile
 * To run:         sbt:Regression > run
 
-The target variable should be the first column of the dataset provided.
+Using built in dataset: Unzip the folder then follow the above instruction mentioned step. After run you will have the menu on which dataset you want to run the code. Once you make your choice the code will give you the graph for all the five regression technique mentined above.The graph has three value r^2, adjusted r^2 and cross validated r^2 after applying forward selection.    
 
-Path of the dataset should be provide properly to run the code
+For other dataset:
+The target variable should be the first column of the dataset provided.
+Path of the dataset should be provide properly to run the code.
+
 
 R :
 * Copy and paste the dataset's .csv files on your local directory.
@@ -54,6 +57,7 @@ Note: All the data set has been taken from http://archive.ics.uci.edu/ml/dataset
 * R
 * Scala
 * Scalation
+* sbt
 
 # Team Member:
 * Priyank Malviya(Priyank.Malviya@uga.edu) 
