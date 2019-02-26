@@ -64,4 +64,7 @@ Note: All the data set has been taken from http://archive.ics.uci.edu/ml/dataset
 * Anubhav Nigam (Anubhav.Nigam@uga.edu)
 * Anant Tripathi (Anant.Tripathi@uga.edu)
 
+# License
+This project is licensed under the MIT License.
+
 
