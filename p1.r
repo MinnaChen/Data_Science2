@@ -1058,4 +1058,693 @@ legend(5,0.8, legend = c("R Squared","Adj R Squared","R Squared CV"),
 
 
 
+#auto sound_pressure
+data5_lin1 <- lm(sound_pressure ~ freq, data = data5)
+data5_lin2 <- lm(sound_pressure ~ freq + displacement, data = data5)
+data5_lin3 <- lm(sound_pressure ~ freq + displacement + chord_len, data = data5)
+data5_lin4 <- lm(sound_pressure ~ freq + displacement + chord_len + velocity, data = data5)
+data5_lin5 <- lm(sound_pressure ~ freq + displacement + chord_len + velocity + angle, data = data5)
+
+
+
+cv_data5_lin1 <- train(sound_pressure ~ freq, data = data5, trControl = train_control, method = "lm")
+cv_data5_lin2 <- train(sound_pressure ~ freq + displacement, data = data5, trControl = train_control, method = "lm")
+cv_data5_lin3 <- train(sound_pressure ~ freq + displacement + chord_len, data = data5, trControl = train_control, method = "lm")
+cv_data5_lin4 <- train(sound_pressure ~ freq + displacement + chord_len + velocity, data = data5, trControl = train_control, method = "lm")
+cv_data5_lin5 <- train(sound_pressure ~ freq + displacement + chord_len + velocity + angle, data = data5, trControl = train_control, method = "lm")
+
+
+error_data5_lin <- data.frame("r_sq" = double(0), "adj_r_sq" = double(0), "cv_r_sq" = double(0))
+error_data5_lin <- add_row(error_data5_lin, r_sq = summary(data5_lin1)$r.squared, adj_r_sq = summary(data5_lin1)$adj.r.squared, cv_r_sq = mean(cv_data5_lin1$resample$Rsquared))
+error_data5_lin <- add_row(error_data5_lin, r_sq = summary(data5_lin2)$r.squared, adj_r_sq = summary(data5_lin2)$adj.r.squared, cv_r_sq = mean(cv_data5_lin2$resample$Rsquared))
+error_data5_lin <- add_row(error_data5_lin, r_sq = summary(data5_lin3)$r.squared, adj_r_sq = summary(data5_lin3)$adj.r.squared, cv_r_sq = mean(cv_data5_lin3$resample$Rsquared))
+error_data5_lin <- add_row(error_data5_lin, r_sq = summary(data5_lin4)$r.squared, adj_r_sq = summary(data5_lin4)$adj.r.squared, cv_r_sq = mean(cv_data5_lin4$resample$Rsquared))
+error_data5_lin <- add_row(error_data5_lin, r_sq = summary(data5_lin5)$r.squared, adj_r_sq = summary(data5_lin5)$adj.r.squared, cv_r_sq = mean(cv_data5_lin5$resample$Rsquared))
+
+
+
+#plot of r square, adjusted r square and r square cross-validation
+plot(error_data5_lin$r_sq, type = 'l', col = 'red', main = "ERROR PLOT LINEAR REGRESSION", ylab = "Errors",xlab = "num variale", ylim = c(0.7,1))
+lines(error_data5_lin$adj_r_sq,  col = 'green' )
+lines(error_data5_lin$cv_r_sq,  col = 'blue')
+legend(5,0.8, legend = c("R Squared","Adj R Squared","R Squared CV"),
+       col = c("red","green","blue"), lty = 1:2, cex = 0.8)
+
+
+
+## RIDGE
+
+
+#auto sound_pressure
+data5_ridge1 <- lmridge(sound_pressure ~ freq + displacement, data5, K = c(0.1, 0.001))
+data5_ridge2 <- lmridge(sound_pressure ~ freq + displacement + chord_len, data5, K = c(0.1, 0.001))
+data5_ridge3 <- lmridge(sound_pressure ~ freq + displacement + chord_len + velocity, data5, K = c(0.1, 0.001))
+data5_ridge4 <- lmridge(sound_pressure ~ freq + displacement + chord_len + velocity + angle, data5, K = c(0.1, 0.001))
+
+
+
+cv_data5_ridge1 <- train(sound_pressure ~ freq + displacement, data = data5, trControl = train_control, method = "ridge")
+cv_data5_ridge2 <- train(sound_pressure ~ freq + displacement + chord_len, data = data5, trControl = train_control, method = "ridge")
+cv_data5_ridge3 <- train(sound_pressure ~ freq + displacement + chord_len + velocity, data = data5, trControl = train_control, method = "ridge")
+cv_data5_ridge4 <- train(sound_pressure ~ freq + displacement + chord_len + velocity + angle, data = data5, trControl = train_control, method = "ridge")
+
+
+error_data5_ridge <- data.frame("r_sq" = double(0), "adj_r_sq" = double(0), "cv_r_sq" = double(0))
+error_data5_ridge <- add_row(error_data5_ridge, r_sq = max(rstats1(data5_ridge1)$R2), adj_r_sq = max(rstats1(data5_ridge1)$adjR2), cv_r_sq = mean(cv_data5_ridge1$resample$Rsquared))
+error_data5_ridge <- add_row(error_data5_ridge, r_sq = max(rstats1(data5_ridge2)$R2), adj_r_sq = max(rstats1(data5_ridge2)$adjR2), cv_r_sq = mean(cv_data5_ridge2$resample$Rsquared))
+error_data5_ridge <- add_row(error_data5_ridge, r_sq = max(rstats1(data5_ridge3)$R2), adj_r_sq = max(rstats1(data5_ridge3)$adjR2), cv_r_sq = mean(cv_data5_ridge3$resample$Rsquared))
+error_data5_ridge <- add_row(error_data5_ridge, r_sq = max(rstats1(data5_ridge4)$R2), adj_r_sq = max(rstats1(data5_ridge4)$adjR2), cv_r_sq = mean(cv_data5_ridge4$resample$Rsquared))
+
+
+plot(error_data5_ridge$r_sq, type = 'l', col = 'red', main = "ERROR PLOT RIDGE", ylab = "Errors",xlab = "num variable", ylim = c(0,1))
+lines(error_data5_ridge$adj_r_sq,  col = 'green' )
+lines(error_data5_ridge$cv_r_sq,  col = 'blue')
+legend(5,0.8, legend = c("R Squared","Adj R Squared","R Squared CV"),
+       col = c("red","green","blue"), lty = 1:2, cex = 0.8)
+
+
+
+## LASSO
+
+#auto
+x <- (data5$freq)
+x <- cbind(data5$displacement, x)
+data5_lasso1 <- lars(x, data5$sound_pressure, type = 'lasso')
+
+x <- (data5$freq)
+x <- cbind(data5$displacement, x)
+x <- cbind(data5$chord_len, x)
+data5_lasso2 <- lars(x, data5$sound_pressure, type = 'lasso')
+
+
+x <- (data5$freq)
+x <- cbind(data5$displacement, x)
+x <- cbind(data5$chord_len, x)
+x <- cbind(data5$velocity, x)
+data5_lasso3 <- lars(x, data5$sound_pressure, type = 'lasso')
+
+
+x <- (data5$freq)
+x <- cbind(data5$displacement, x)
+x <- cbind(data5$chord_len, x)
+x <- cbind(data5$velocity, x)
+x <- cbind(data5$angle, x)
+data5_lasso4 <- lars(x, data5$sound_pressure, type = 'lasso')
+
+
+
+cv_data5_lasso1 <- train(sound_pressure ~ freq + displacement, data = data5, trControl = train_control, method = "lasso")
+cv_data5_lasso2 <- train(sound_pressure ~ freq + displacement + chord_len, data = data5, trControl = train_control, method = "lasso")
+cv_data5_lasso3 <- train(sound_pressure ~ freq + displacement + chord_len + velocity, data = data5, trControl = train_control, method = "lasso")
+cv_data5_lasso4 <- train(sound_pressure ~ freq + displacement + chord_len + velocity + angle, data = data5, trControl = train_control, method = "lasso")
+
+error_data5_lasso <- data.frame("r_sq" = double(0), "cv_r_sq" = double(0))
+error_data5_lasso <- add_row(error_data5_lasso, r_sq = max(data5_lasso1$R2), cv_r_sq = mean(cv_data5_lasso1$resample$Rsquared))
+error_data5_lasso <- add_row(error_data5_lasso, r_sq = max(data5_lasso2$R2), cv_r_sq = mean(cv_data5_lasso2$resample$Rsquared))
+error_data5_lasso <- add_row(error_data5_lasso, r_sq = max(data5_lasso3$R2), cv_r_sq = mean(cv_data5_lasso3$resample$Rsquared))
+error_data5_lasso <- add_row(error_data5_lasso, r_sq = max(data5_lasso4$R2), cv_r_sq = mean(cv_data5_lasso4$resample$Rsquared))
+
+#plot of r square, adjusted r square
+plot(error_data5_lasso$r_sq, type = 'l', col = 'red', main = "ERROR PLOT LASSO", ylab = "Errors",xlab = "num variable", ylim = c(0,1))
+lines(error_data5_lasso$cv_r_sq,  col = 'blue')
+legend(5,0.8, legend = c("R Squared","Adj R Squared","R Squared CV"),
+       col = c("red","green","blue"), lty = 1:2, cex = 0.8)
+
+
+## QUAD
+
+#transferring the current data into new data frame
+
+##adding square of each of the predictors to the data frame for quad regression
+data5$freq_square <- data5$freq^2
+data5$displacement_square <- data5$displacement^2
+data5$chord_len_square <- data5$chord_len^2
+data5$velocity_square <- data5$velocity^2
+data5$angle_square <- data5$angle^2
+
+
+
+#regression
+data5_quad1 <- lm(sound_pressure ~ freq + freq_square, data = data5)
+data5_quad2 <- lm(sound_pressure ~ freq + freq_square + displacement + displacement_square, data = data5)
+data5_quad3 <- lm(sound_pressure ~ freq + freq_square + displacement + displacement_square + chord_len + chord_len_square, data = data5)
+data5_quad4 <- lm(sound_pressure ~ freq + freq_square + displacement + displacement_square + chord_len + chord_len_square + velocity + velocity_square, data = data5)
+data5_quad5 <- lm(sound_pressure ~ freq + freq_square + displacement + displacement_square + chord_len + chord_len_square + velocity + velocity_square + angle + angle_square, data = data5)
+
+#cross validation
+cv_data5_quad1 <- train(sound_pressure ~ freq + freq_square, data = data5, trControl = train_control, method = "lm")
+cv_data5_quad2 <- train(sound_pressure ~ freq + freq_square + displacement + displacement_square, data = data5, trControl = train_control, method = "lm")
+cv_data5_quad3 <- train(sound_pressure ~ freq + freq_square + displacement + displacement_square + chord_len + chord_len_square, data = data5, trControl = train_control, method = "lm")
+cv_data5_quad4 <- train(sound_pressure ~ freq + freq_square + displacement + displacement_square + chord_len + chord_len_square + velocity + velocity_square, data = data5, trControl = train_control, method = "lm")
+cv_data5_quad5 <- train(sound_pressure ~ freq + freq_square + displacement + displacement_square + chord_len + chord_len_square + velocity + velocity_square + angle + angle_square, data = data5, trControl = train_control, method = "lm")
+
+#creating a new dataframe to store rsquare adjusted_rsquard and cv rsquared
+error_data5_quad <- data.frame("r_sq" = double(0), "adj_r_sq" = double(0), "cv_r_sq" = double(0))
+error_data5_quad <- add_row(error_data5_quad, r_sq = summary(data5_quad1)$r.squared, adj_r_sq = summary(data5_quad1)$adj.r.squared, cv_r_sq = mean(cv_data5_quad1$resample$Rsquared))
+error_data5_quad <- add_row(error_data5_quad, r_sq = summary(data5_quad2)$r.squared, adj_r_sq = summary(data5_quad2)$adj.r.squared, cv_r_sq = mean(cv_data5_quad2$resample$Rsquared))
+error_data5_quad <- add_row(error_data5_quad, r_sq = summary(data5_quad3)$r.squared, adj_r_sq = summary(data5_quad3)$adj.r.squared, cv_r_sq = mean(cv_data5_quad3$resample$Rsquared))
+error_data5_quad <- add_row(error_data5_quad, r_sq = summary(data5_quad4)$r.squared, adj_r_sq = summary(data5_quad4)$adj.r.squared, cv_r_sq = mean(cv_data5_quad4$resample$Rsquared))
+error_data5_quad <- add_row(error_data5_quad, r_sq = summary(data5_quad5)$r.squared, adj_r_sq = summary(data5_quad5)$adj.r.squared, cv_r_sq = mean(cv_data5_quad5$resample$Rsquared))
+
+#plot of r square, adjusted r square and r square cross-validation
+plot(error_data5_quad$r_sq, type = 'l', col = 'red', main = "ERROR PLOT QUAD", ylab = "Errors",xlab = "num variable", ylim = c(0.7,1))
+lines(error_data5_quad$adj_r_sq,  col = 'green' )
+lines(error_data5_quad$cv_r_sq,  col = 'blue')
+legend(5,0.8, legend = c("R Squared","Adj R Squared","R Squared CV"),
+       col = c("red","green","blue"), lty = 1:2, cex = 0.8)
+
+
+## RESPONSE
+
+#creating a new dataframe from auto df for RESPONSE SURFACE REGRESSION
+data5 <- data5
+
+data5_rspns1 <- rsm(sound_pressure ~ SO(freq, displacement), data = data5)
+data5_rspns2 <- rsm(sound_pressure ~ SO(freq, displacement, chord_len), data = data5)
+data5_rspns3 <- rsm(sound_pressure ~ SO(freq, displacement, chord_len, velocity), data = data5)
+data5_rspns4 <- rsm(sound_pressure ~ SO(freq, displacement, chord_len, velocity, angle), data = data5)
+
+
+error_data5_rspns <- data.frame("r_sq" = double(0), "adj_r_sq" = double(0))
+error_data5_rspns <- add_row(error_data5_rspns, r_sq = summary(data5_rspns1)$r.squared, adj_r_sq = summary(data5_rspns1)$adj.r.squared)
+error_data5_rspns <- add_row(error_data5_rspns, r_sq = summary(data5_rspns2)$r.squared, adj_r_sq = summary(data5_rspns2)$adj.r.squared)
+error_data5_rspns <- add_row(error_data5_rspns, r_sq = summary(data5_rspns3)$r.squared, adj_r_sq = summary(data5_rspns3)$adj.r.squared)
+error_data5_rspns <- add_row(error_data5_rspns, r_sq = summary(data5_rspns4)$r.squared, adj_r_sq = summary(data5_rspns4)$adj.r.squared)
+
+#plot of r square, adjusted r square
+plot(error_data5_rspns$r_sq, type = 'l', col = 'red', main = "ERROR PLOT RESPONSE SURFACE", ylab = "Errors", ylim = c(0.3,1))
+lines(error_data5_rspns$adj_r_sq,  col = 'green' )
+legend(5,0.8, legend = c("R Squared","Adj R Squared"),
+       col = c("red","green"), lty = 1:2, cex = 0.8)
+
+
+
+## Computer Hardware Dataset
+
+comp_df <- read.csv('filepath')
+data6 <- comp_df
+
+#replacing missing values with mean
+data6$myct[is.na(data6$myct)] <- mean(data6$myct, na.rm = TRUE)
+data6$mmin[is.na(data6$mmin)] <- mean(data6$mmin, na.rm = TRUE)
+data6$mmax[is.na(data6$mmax)] <- mean(data6$mmax, na.rm = TRUE)
+data6$cach[is.na(data6$cach)] <- mean(data6$cach, na.rm = TRUE)
+data6$chmin[is.na(data6$chmin)] <- mean(data6$chmin, na.rm = TRUE)
+data6$chmax[is.na(data6$chmax)] <- mean(data6$chmax, na.rm = TRUE)
+data6$prp[is.na(data6$prp)] <- mean(data6$prp, na.rm = TRUE)
+data6$erp[is.na(data6$erp)] <- mean(data6$erp, na.rm = TRUE)
+
+
+# forward selection
+fwd_model_auto <- lm(erp ~ 1,  data = data6)
+step(fwd_model_auto, direction = "forward", scope = formula(erp ~ myct + mmin + mmax + cach + chmin + chmax + prp))
+summary(fwd_model_auto)
+
+train_control <- trainControl(method = "cv", number = 10)
+
+
+#auto erp
+data6_lin1 <- lm(erp ~ prp, data = data6)
+data6_lin2 <- lm(erp ~ prp + mmax, data = data6)
+data6_lin3 <- lm(erp ~ prp + mmax + mmin, data = data6)
+data6_lin4 <- lm(erp ~ prp + mmax + mmin + myct, data = data6)
+data6_lin5 <- lm(erp ~ prp + mmax + mmin + myct + chmax, data = data6)
+data6_lin6 <- lm(erp ~ prp + mmax + mmin + myct + chmax + cach, data = data6)
+data6_lin7 <- lm(erp ~ prp + mmax + mmin + myct + chmax + cach + chmin, data = data6)
+
+
+#cross validation
+cv_data6_lin1 <- train(erp ~ prp, data = data6, trControl = train_control, method = "lm")
+cv_data6_lin2 <- train(erp ~ prp + mmax, data = data6, trControl = train_control, method = "lm")
+cv_data6_lin3 <- train(erp ~ prp + mmax + mmin, data = data6, trControl = train_control, method = "lm")
+cv_data6_lin4 <- train(erp ~ prp + mmax + mmin + myct, data = data6, trControl = train_control, method = "lm")
+cv_data6_lin5 <- train(erp ~ prp + mmax + mmin + myct + chmax, data = data6, trControl = train_control, method = "lm")
+cv_data6_lin6 <- train(erp ~ prp + mmax + mmin + myct + chmax + cach, data = data6, trControl = train_control, method = "lm")
+cv_data6_lin7 <- train(erp ~ prp + mmax + mmin + myct + chmax + cach + chmin, data = data6, trControl = train_control, method = "lm")
+
+
+#storing r square, adj r square and cv r square in dataframe
+error_data6_lin <- data.frame("r_sq" = double(0), "adj_r_sq" = double(0), "cv_r_sq" = double(0))
+error_data6_lin <- add_row(error_data6_lin, r_sq = summary(data6_lin1)$r.squared, adj_r_sq = summary(data6_lin1)$adj.r.squared, cv_r_sq = mean(cv_data6_lin1$resample$Rsquared))
+error_data6_lin <- add_row(error_data6_lin, r_sq = summary(data6_lin2)$r.squared, adj_r_sq = summary(data6_lin2)$adj.r.squared, cv_r_sq = mean(cv_data6_lin2$resample$Rsquared))
+error_data6_lin <- add_row(error_data6_lin, r_sq = summary(data6_lin3)$r.squared, adj_r_sq = summary(data6_lin3)$adj.r.squared, cv_r_sq = mean(cv_data6_lin3$resample$Rsquared))
+error_data6_lin <- add_row(error_data6_lin, r_sq = summary(data6_lin4)$r.squared, adj_r_sq = summary(data6_lin4)$adj.r.squared, cv_r_sq = mean(cv_data6_lin4$resample$Rsquared))
+error_data6_lin <- add_row(error_data6_lin, r_sq = summary(data6_lin5)$r.squared, adj_r_sq = summary(data6_lin5)$adj.r.squared, cv_r_sq = mean(cv_data6_lin5$resample$Rsquared))
+error_data6_lin <- add_row(error_data6_lin, r_sq = summary(data6_lin6)$r.squared, adj_r_sq = summary(data6_lin6)$adj.r.squared, cv_r_sq = mean(cv_data6_lin6$resample$Rsquared))
+error_data6_lin <- add_row(error_data6_lin, r_sq = summary(data6_lin7)$r.squared, adj_r_sq = summary(data6_lin7)$adj.r.squared, cv_r_sq = mean(cv_data6_lin7$resample$Rsquared))
+
+
+
+#plot of r square, adjusted r square and r square cross-validation
+plot(error_data6_lin$r_sq, type = 'l', col = 'red', main = "ERROR PLOT LINEAR REGRESSION", ylab = "Errors",xlab = "num variale", ylim = c(0,1))
+lines(error_data6_lin$adj_r_sq,  col = 'green' )
+lines(error_data6_lin$cv_r_sq,  col = 'blue')
+legend(5,0.8, legend = c("R Squared","Adj R Squared","R Squared CV"),
+       col = c("red","green","blue"), lty = 1:2, cex = 0.8)
+
+
+
+## RIDGE
+
+
+#ridge regression
+data6_ridge1 <- lmridge(erp ~ prp + mmax, data6, K = c(0.1, 0.001))
+data6_ridge2 <- lmridge(erp ~ prp + mmax + mmin, data6, K = c(0.1, 0.001))
+data6_ridge3 <- lmridge(erp ~ prp + mmax + mmin + myct, data6, K = c(0.1, 0.001))
+data6_ridge4 <- lmridge(erp ~ prp + mmax + mmin + myct + chmax , data6, K = c(0.1, 0.001))
+data6_ridge5 <- lmridge(erp ~ prp + mmax + mmin + myct + chmax + cach, data6, K = c(0.1, 0.001))
+data6_ridge6 <- lmridge(erp ~ prp + mmax + mmin + myct + chmax + cach + chmin, data6, K = c(0.1, 0.001))
+
+#cross validation
+cv_data6_ridge1 <- train(erp ~ prp + mmax, data = data6, trControl = train_control, method = "ridge")
+cv_data6_ridge2 <- train(erp ~ prp + mmax + mmin, data = data6, trControl = train_control, method = "ridge")
+cv_data6_ridge3 <- train(erp ~ prp + mmax + mmin + myct, data = data6, trControl = train_control, method = "ridge")
+cv_data6_ridge4 <- train(erp ~ prp + mmax + mmin + myct + chmax, data = data6, trControl = train_control, method = "ridge")
+cv_data6_ridge5 <- train(erp ~ prp + mmax + mmin + myct + chmax + cach, data = data6, trControl = train_control, method = "ridge")
+cv_data6_ridge6 <- train(erp ~ prp + mmax + mmin + myct + chmax + cach + chmin, data = data6, trControl = train_control, method = "ridge")
+
+
+error_data6_ridge <- data.frame("r_sq" = double(0), "adj_r_sq" = double(0), "cv_r_sq" = double(0))
+error_data6_ridge <- add_row(error_data6_ridge, r_sq = max(rstats1(data6_ridge1)$R2), adj_r_sq = max(rstats1(data6_ridge1)$adjR2), cv_r_sq = mean(cv_data6_ridge1$resample$Rsquared))
+error_data6_ridge <- add_row(error_data6_ridge, r_sq = max(rstats1(data6_ridge2)$R2), adj_r_sq = max(rstats1(data6_ridge2)$adjR2), cv_r_sq = mean(cv_data6_ridge2$resample$Rsquared))
+error_data6_ridge <- add_row(error_data6_ridge, r_sq = max(rstats1(data6_ridge3)$R2), adj_r_sq = max(rstats1(data6_ridge3)$adjR2), cv_r_sq = mean(cv_data6_ridge3$resample$Rsquared))
+error_data6_ridge <- add_row(error_data6_ridge, r_sq = max(rstats1(data6_ridge4)$R2), adj_r_sq = max(rstats1(data6_ridge4)$adjR2), cv_r_sq = mean(cv_data6_ridge4$resample$Rsquared))
+error_data6_ridge <- add_row(error_data6_ridge, r_sq = max(rstats1(data6_ridge5)$R2), adj_r_sq = max(rstats1(data6_ridge5)$adjR2), cv_r_sq = mean(cv_data6_ridge5$resample$Rsquared))
+error_data6_ridge <- add_row(error_data6_ridge, r_sq = max(rstats1(data6_ridge6)$R2), adj_r_sq = max(rstats1(data6_ridge6)$adjR2), cv_r_sq = mean(cv_data6_ridge6$resample$Rsquared))
+
+
+plot(error_data6_ridge$r_sq, type = 'l', col = 'red', main = "ERROR PLOT RIDGE", ylab = "Errors",xlab = "num variable", ylim = c(0,1))
+lines(error_data6_ridge$adj_r_sq,  col = 'green' )
+lines(error_data6_ridge$cv_r_sq,  col = 'blue')
+legend(1,0.8, legend = c("R Squared","Adj R Squared","R Squared CV"),
+       col = c("red","green","blue"), lty = 1:2, cex = 0.8)
+
+
+
+## LASSO
+
+#lasso
+x <- (data6$prp)
+x <- cbind(data6$mmax, x)
+data6_lasso1 <- lars(x, data6$erp, type = 'lasso')
+
+x <- (data6$prp)
+x <- cbind(data6$mmax, x)
+x <- cbind(data6$mmin, x)
+data6_lasso2 <- lars(x, data6$erp, type = 'lasso')
+
+
+x <- (data6$prp)
+x <- cbind(data6$mmax, x)
+x <- cbind(data6$mmin, x)
+x <- cbind(data6$myct, x)
+data6_lasso3 <- lars(x, data6$erp, type = 'lasso')
+
+
+x <- (data6$prp)
+x <- cbind(data6$mmax, x)
+x <- cbind(data6$mmin, x)
+x <- cbind(data6$myct, x)
+x <- cbind(data6$chmax, x)
+data6_lasso4 <- lars(x, data6$erp, type = 'lasso')
+
+x <- (data6$prp)
+x <- cbind(data6$mmax, x)
+x <- cbind(data6$mmin, x)
+x <- cbind(data6$myct, x)
+x <- cbind(data6$chmax, x)
+x <- cbind(data6$cach, x)
+data6_lasso5 <- lars(x, data6$erp, type = 'lasso')
+
+x <- (data6$prp)
+x <- cbind(data6$mmax, x)
+x <- cbind(data6$mmin, x)
+x <- cbind(data6$myct, x)
+x <- cbind(data6$chmax, x)
+x <- cbind(data6$cach, x)
+x <- cbind(data6$chmin, x)
+data6_lasso6 <- lars(x, data6$erp, type = 'lasso')
+
+
+
+cv_data6_lasso1 <- train(erp ~ prp + mmax, data = data6, trControl = train_control, method = "lasso")
+cv_data6_lasso2 <- train(erp ~ prp + mmax + mmin, data = data6, trControl = train_control, method = "lasso")
+cv_data6_lasso3 <- train(erp ~ prp + mmax + mmin + myct, data = data6, trControl = train_control, method = "lasso")
+cv_data6_lasso4 <- train(erp ~ prp + mmax + mmin + myct + chmax, data = data6, trControl = train_control, method = "lasso")
+cv_data6_lasso5 <- train(erp ~ prp + mmax + mmin + myct + chmax + cach, data = data6, trControl = train_control, method = "lasso")
+cv_data6_lasso6 <- train(erp ~ prp + mmax + mmin + myct + chmax + cach + chmin, data = data6, trControl = train_control, method = "lasso")
+
+
+error_data6_lasso <- data.frame("r_sq" = double(0), "cv_r_sq" = double(0) )
+error_data6_lasso <- add_row(error_data6_lasso, r_sq = max(data6_lasso1$R2), cv_r_sq = mean(cv_data6_lasso1$resample$Rsquared))
+error_data6_lasso <- add_row(error_data6_lasso, r_sq = max(data6_lasso2$R2), cv_r_sq = mean(cv_data6_lasso2$resample$Rsquared))
+error_data6_lasso <- add_row(error_data6_lasso, r_sq = max(data6_lasso3$R2), cv_r_sq = mean(cv_data6_lasso3$resample$Rsquared))
+error_data6_lasso <- add_row(error_data6_lasso, r_sq = max(data6_lasso4$R2), cv_r_sq = mean(cv_data6_lasso4$resample$Rsquared))
+error_data6_lasso <- add_row(error_data6_lasso, r_sq = max(data6_lasso5$R2), cv_r_sq = mean(cv_data6_lasso5$resample$Rsquared))
+error_data6_lasso <- add_row(error_data6_lasso, r_sq = max(data6_lasso6$R2), cv_r_sq = mean(cv_data6_lasso6$resample$Rsquared))
+
+
+#plot of r square, adjusted r square
+plot(error_data6_lasso$r_sq, type = 'l', col = 'red', main = "ERROR PLOT LASSO", ylab = "Errors",xlab = "num variable", ylim = c(0,1))
+lines(error_data6_lasso$cv_r_sq,  col = 'blue')
+legend(5,0.8, legend = c("R Squared","Adj R Squared","R Squared CV"),
+       col = c("red","green","blue"), lty = 1:2, cex = 0.8)
+
+
+## QUAD
+
+#transferring the current data into new data frame
+
+##adding square of each of the predictors to the data frame for quad regression
+data6$prp_square <- data6$prp^2
+data6$mmax_square <- data6$mmax^2
+data6$mmin_square <- data6$mmin^2
+data6$myct_square <- data6$myct^2
+data6$chmax_square <- data6$chmax^2
+data6$cach_square <- data6$cach^2
+data6$chmin_square <- data6$chmin^2
+
+
+#regression
+data6_quad1 <- lm(erp ~ prp + prp_square, data = data6)
+data6_quad2 <- lm(erp ~ prp + prp_square + mmax + mmax_square, data = data6)
+data6_quad3 <- lm(erp ~ prp + prp_square + mmax + mmax_square + mmin + mmin_square, data = data6)
+data6_quad4 <- lm(erp ~ prp + prp_square + mmax + mmax_square + mmin + mmin_square + myct + myct_square, data = data6)
+data6_quad5 <- lm(erp ~ prp + prp_square + mmax + mmax_square + mmin + mmin_square + myct + myct_square + chmax + chmax_square, data = data6)
+data6_quad6 <- lm(erp ~ prp + prp_square + mmax + mmax_square + mmin + mmin_square + myct + myct_square + chmax + chmax_square + cach + cach_square, data = data6)
+data6_quad7 <- lm(erp ~ prp + prp_square + mmax + mmax_square + mmin + mmin_square + myct + myct_square + chmax + chmax_square + cach + cach_square + chmin + chmin_square, data = data6)
+
+
+#cross validation
+cv_data6_quad1 <- train(erp ~ prp + prp_square, data = data6, trControl = train_control, method = "lm")
+cv_data6_quad2 <- train(erp ~ prp + prp_square + mmax + mmax_square, data = data6, trControl = train_control, method = "lm")
+cv_data6_quad3 <- train(erp ~ prp + prp_square + mmax + mmax_square + mmin + mmin_square, data = data6, trControl = train_control, method = "lm")
+cv_data6_quad4 <- train(erp ~ prp + prp_square + mmax + mmax_square + mmin + mmin_square + myct + myct_square, data = data6, trControl = train_control, method = "lm")
+cv_data6_quad5 <- train(erp ~ prp + prp_square + mmax + mmax_square + mmin + mmin_square + myct + myct_square + chmax + chmax_square, data = data6, trControl = train_control, method = "lm")
+cv_data6_quad6 <- train(erp ~ prp + prp_square + mmax + mmax_square + mmin + mmin_square + myct + myct_square + chmax + chmax_square + cach + cach_square, data = data6, trControl = train_control, method = "lm")
+cv_data6_quad7 <- train(erp ~ prp + prp_square + mmax + mmax_square + mmin + mmin_square + myct + myct_square + chmax + chmax_square + cach + cach_square + chmin + chmin_square, data = data6, trControl = train_control, method = "lm")
+
+
+#creating a new dataframe to store rsquare adjusted_rsquard and cv rsquared
+error_data6_quad <- data.frame("r_sq" = double(0), "adj_r_sq" = double(0), "cv_r_sq" = double(0))
+error_data6_quad <- add_row(error_data6_quad, r_sq = summary(data6_quad1)$r.squared, adj_r_sq = summary(data6_quad1)$adj.r.squared, cv_r_sq = mean(cv_data6_quad1$resample$Rsquared))
+error_data6_quad <- add_row(error_data6_quad, r_sq = summary(data6_quad2)$r.squared, adj_r_sq = summary(data6_quad2)$adj.r.squared, cv_r_sq = mean(cv_data6_quad2$resample$Rsquared))
+error_data6_quad <- add_row(error_data6_quad, r_sq = summary(data6_quad3)$r.squared, adj_r_sq = summary(data6_quad3)$adj.r.squared, cv_r_sq = mean(cv_data6_quad3$resample$Rsquared))
+error_data6_quad <- add_row(error_data6_quad, r_sq = summary(data6_quad4)$r.squared, adj_r_sq = summary(data6_quad4)$adj.r.squared, cv_r_sq = mean(cv_data6_quad4$resample$Rsquared))
+error_data6_quad <- add_row(error_data6_quad, r_sq = summary(data6_quad5)$r.squared, adj_r_sq = summary(data6_quad5)$adj.r.squared, cv_r_sq = mean(cv_data6_quad5$resample$Rsquared))
+error_data6_quad <- add_row(error_data6_quad, r_sq = summary(data6_quad6)$r.squared, adj_r_sq = summary(data6_quad6)$adj.r.squared, cv_r_sq = mean(cv_data6_quad6$resample$Rsquared))
+error_data6_quad <- add_row(error_data6_quad, r_sq = summary(data6_quad7)$r.squared, adj_r_sq = summary(data6_quad7)$adj.r.squared, cv_r_sq = mean(cv_data6_quad7$resample$Rsquared))
+
+
+#plot of r square, adjusted r square and r square cross-validation
+plot(error_data6_quad$r_sq, type = 'l', col = 'red', main = "ERROR PLOT QUAD", ylab = "Errors",xlab = "num variable", ylim = c(0,1))
+lines(error_data6_quad$adj_r_sq,  col = 'green' )
+lines(error_data6_quad$cv_r_sq,  col = 'blue')
+legend(1,0.8, legend = c("R Squared","Adj R Squared","R Squared CV"),
+       col = c("red","green","blue"), lty = 1:2, cex = 0.8)
+
+
+## RESPONSE
+
+#creating a new dataframe from auto df for RESPONSE SURFACE REGRESSION
+data6 <- data6
+
+data6_rspns1 <- rsm(erp ~ SO(prp, mmax), data = data6)
+data6_rspns2 <- rsm(erp ~ SO(prp, mmax, mmin), data = data6)
+data6_rspns3 <- rsm(erp ~ SO(prp, mmax, mmin, myct), data = data6)
+data6_rspns4 <- rsm(erp ~ SO(prp, mmax, mmin, myct, chmax), data = data6)
+data6_rspns5 <- rsm(erp ~ SO(prp, mmax, mmin, myct, chmax, cach), data = data6)
+data6_rspns6 <- rsm(erp ~ SO(prp, mmax, mmin, myct, chmax, cach, chmin), data = data6)
+
+
+
+error_data6_rspns <- data.frame("r_sq" = double(0), "adj_r_sq" = double(0))
+error_data6_rspns <- add_row(error_data6_rspns, r_sq = summary(data6_rspns1)$r.squared, adj_r_sq = summary(data6_rspns1)$adj.r.squared)
+error_data6_rspns <- add_row(error_data6_rspns, r_sq = summary(data6_rspns2)$r.squared, adj_r_sq = summary(data6_rspns2)$adj.r.squared)
+error_data6_rspns <- add_row(error_data6_rspns, r_sq = summary(data6_rspns3)$r.squared, adj_r_sq = summary(data6_rspns3)$adj.r.squared)
+error_data6_rspns <- add_row(error_data6_rspns, r_sq = summary(data6_rspns4)$r.squared, adj_r_sq = summary(data6_rspns4)$adj.r.squared)
+error_data6_rspns <- add_row(error_data6_rspns, r_sq = summary(data6_rspns5)$r.squared, adj_r_sq = summary(data6_rspns5)$adj.r.squared)
+error_data6_rspns <- add_row(error_data6_rspns, r_sq = summary(data6_rspns6)$r.squared, adj_r_sq = summary(data6_rspns6)$adj.r.squared)
+
+
+#plot of r square, adjusted r square
+plot(error_data6_rspns$r_sq, type = 'l', col = 'red', main = "ERROR PLOT RESPONSE SURFACE", ylab = "Errors", ylim = c(0.3,1))
+lines(error_data6_rspns$adj_r_sq,  col = 'green' )
+legend(5,0.8, legend = c("R Squared","Adj R Squared"),
+       col = c("red","green"), lty = 1:2, cex = 0.8)
+
+
+## GPS DATASET
+
+data8$speed[is.na(data8$speed)] <- mean(data8$speed, na.rm = TRUE)
+data8$time[is.na(data8$time)] <- mean(data8$time, na.rm = TRUE)
+data8$distance[is.na(data8$distance)] <- mean(data8$distance, na.rm = TRUE)
+data8$rating[is.na(data8$rating)] <- mean(data8$rating, na.rm = TRUE)
+data8$rating_bus[is.na(data8$rating_bus)] <- mean(data8$rating_bus, na.rm = TRUE)
+data8$rating_weather[is.na(data8$rating_weather)] <- mean(data8$rating_weather, na.rm = TRUE)
+data8$car_or_bus[is.na(data8$car_or_bus)] <- mean(data8$car_or_bus, na.rm = TRUE)
+data8$id_android[is.na(data8$id_android)] <- mean(data8$id_android, na.rm = TRUE)
+
+fwd_model_auto <- lm(id_android ~ 1,  data = data8)
+step(fwd_model_auto, direction = "forward", scope = formula(id_android ~ speed + time + distance + rating + rating_bus + rating_weather + car_or_bus))
+summary(fwd_model_auto)
+
+#formula obtained id_android ~ rating_weather + car_or_bus +   rest(speed + time + rating_bus + distance + rating)
+
+train_control <- trainControl(method = "cv", number = 10)
+
+
+#auto id_android
+data8_lin1 <- lm(id_android ~ rating_weather, data = data8)
+data8_lin2 <- lm(id_android ~ rating_weather + car_or_bus, data = data8)
+data8_lin3 <- lm(id_android ~ rating_weather + car_or_bus + speed, data = data8)
+data8_lin4 <- lm(id_android ~ rating_weather + car_or_bus + speed + time, data = data8)
+data8_lin5 <- lm(id_android ~ rating_weather + car_or_bus + speed + time + rating_bus, data = data8)
+data8_lin6 <- lm(id_android ~ rating_weather + car_or_bus + speed + time + rating_bus + distance, data = data8)
+data8_lin7 <- lm(id_android ~ rating_weather + car_or_bus + speed + time + rating_bus + distance + rating, data = data8)
+
+
+#cross validation
+cv_data8_lin1 <- train(id_android ~ rating_weather, data = data8, trControl = train_control, method = "lm")
+cv_data8_lin2 <- train(id_android ~ rating_weather + car_or_bus, data = data8, trControl = train_control, method = "lm")
+cv_data8_lin3 <- train(id_android ~ rating_weather + car_or_bus + speed, data = data8, trControl = train_control, method = "lm")
+cv_data8_lin4 <- train(id_android ~ rating_weather + car_or_bus + speed + time, data = data8, trControl = train_control, method = "lm")
+cv_data8_lin5 <- train(id_android ~ rating_weather + car_or_bus + speed + time + rating_bus, data = data8, trControl = train_control, method = "lm")
+cv_data8_lin6 <- train(id_android ~ rating_weather + car_or_bus + speed + time + rating_bus + distance, data = data8, trControl = train_control, method = "lm")
+cv_data8_lin7 <- train(id_android ~ rating_weather + car_or_bus + speed + time + rating_bus + distance + rating, data = data8, trControl = train_control, method = "lm")
+
+
+#storing r square, adj r square and cv r square in dataframe
+error_data8_lin <- data.frame("r_sq" = double(0), "adj_r_sq" = double(0), "cv_r_sq" = double(0))
+error_data8_lin <- add_row(error_data8_lin, r_sq = summary(data8_lin1)$r.squared, adj_r_sq = summary(data8_lin1)$adj.r.squared, cv_r_sq = mean(cv_data8_lin1$resample$Rsquared))
+error_data8_lin <- add_row(error_data8_lin, r_sq = summary(data8_lin2)$r.squared, adj_r_sq = summary(data8_lin2)$adj.r.squared, cv_r_sq = mean(cv_data8_lin2$resample$Rsquared))
+error_data8_lin <- add_row(error_data8_lin, r_sq = summary(data8_lin3)$r.squared, adj_r_sq = summary(data8_lin3)$adj.r.squared, cv_r_sq = mean(cv_data8_lin3$resample$Rsquared))
+error_data8_lin <- add_row(error_data8_lin, r_sq = summary(data8_lin4)$r.squared, adj_r_sq = summary(data8_lin4)$adj.r.squared, cv_r_sq = mean(cv_data8_lin4$resample$Rsquared))
+error_data8_lin <- add_row(error_data8_lin, r_sq = summary(data8_lin5)$r.squared, adj_r_sq = summary(data8_lin5)$adj.r.squared, cv_r_sq = mean(cv_data8_lin5$resample$Rsquared))
+error_data8_lin <- add_row(error_data8_lin, r_sq = summary(data8_lin6)$r.squared, adj_r_sq = summary(data8_lin6)$adj.r.squared, cv_r_sq = mean(cv_data8_lin6$resample$Rsquared))
+error_data8_lin <- add_row(error_data8_lin, r_sq = summary(data8_lin7)$r.squared, adj_r_sq = summary(data8_lin7)$adj.r.squared, cv_r_sq = mean(cv_data8_lin7$resample$Rsquared))
+
+
+
+#plot of r square, adjusted r square and r square cross-validation
+plot(error_data8_lin$r_sq, type = 'l', col = 'red', main = "ERROR PLOT LINEAR REGRESSION", ylab = "Errors",xlab = "num variale", ylim = c(0,1))
+lines(error_data8_lin$adj_r_sq,  col = 'green' )
+lines(error_data8_lin$cv_r_sq,  col = 'blue')
+legend(5,0.8, legend = c("R Squared","Adj R Squared","R Squared CV"),
+       col = c("red","green","blue"), lty = 1:2, cex = 0.8)
+
+
+
+## RIDGE
+
+
+#ridge regression
+data8_ridge1 <- lmridge(id_android ~ rating_weather + car_or_bus, data8, K = c(0.1, 0.001))
+data8_ridge2 <- lmridge(id_android ~ rating_weather + car_or_bus + speed, data8, K = c(0.1, 0.001))
+data8_ridge3 <- lmridge(id_android ~ rating_weather + car_or_bus + speed + time, data8, K = c(0.1, 0.001))
+data8_ridge4 <- lmridge(id_android ~ rating_weather + car_or_bus + speed + time + rating_bus , data8, K = c(0.1, 0.001))
+data8_ridge5 <- lmridge(id_android ~ rating_weather + car_or_bus + speed + time + rating_bus + distance, data8, K = c(0.1, 0.001))
+data8_ridge6 <- lmridge(id_android ~ rating_weather + car_or_bus + speed + time + rating_bus + distance + rating, data8, K = c(0.1, 0.001))
+
+#cross validation
+cv_data8_ridge1 <- train(id_android ~ rating_weather + car_or_bus, data = data8, trControl = train_control, method = "ridge")
+cv_data8_ridge2 <- train(id_android ~ rating_weather + car_or_bus + speed, data = data8, trControl = train_control, method = "ridge")
+cv_data8_ridge3 <- train(id_android ~ rating_weather + car_or_bus + speed + time, data = data8, trControl = train_control, method = "ridge")
+cv_data8_ridge4 <- train(id_android ~ rating_weather + car_or_bus + speed + time + rating_bus, data = data8, trControl = train_control, method = "ridge")
+cv_data8_ridge5 <- train(id_android ~ rating_weather + car_or_bus + speed + time + rating_bus + distance, data = data8, trControl = train_control, method = "ridge")
+cv_data8_ridge6 <- train(id_android ~ rating_weather + car_or_bus + speed + time + rating_bus + distance + rating, data = data8, trControl = train_control, method = "ridge")
+
+
+error_data8_ridge <- data.frame("r_sq" = double(0), "adj_r_sq" = double(0), "cv_r_sq" = double(0))
+error_data8_ridge <- add_row(error_data8_ridge, r_sq = max(rstats1(data8_ridge1)$R2), adj_r_sq = max(rstats1(data8_ridge1)$adjR2), cv_r_sq = mean(cv_data8_ridge1$resample$Rsquared))
+error_data8_ridge <- add_row(error_data8_ridge, r_sq = max(rstats1(data8_ridge2)$R2), adj_r_sq = max(rstats1(data8_ridge2)$adjR2), cv_r_sq = mean(cv_data8_ridge2$resample$Rsquared))
+error_data8_ridge <- add_row(error_data8_ridge, r_sq = max(rstats1(data8_ridge3)$R2), adj_r_sq = max(rstats1(data8_ridge3)$adjR2), cv_r_sq = mean(cv_data8_ridge3$resample$Rsquared))
+error_data8_ridge <- add_row(error_data8_ridge, r_sq = max(rstats1(data8_ridge4)$R2), adj_r_sq = max(rstats1(data8_ridge4)$adjR2), cv_r_sq = mean(cv_data8_ridge4$resample$Rsquared))
+error_data8_ridge <- add_row(error_data8_ridge, r_sq = max(rstats1(data8_ridge5)$R2), adj_r_sq = max(rstats1(data8_ridge5)$adjR2), cv_r_sq = mean(cv_data8_ridge5$resample$Rsquared))
+error_data8_ridge <- add_row(error_data8_ridge, r_sq = max(rstats1(data8_ridge6)$R2), adj_r_sq = max(rstats1(data8_ridge6)$adjR2), cv_r_sq = mean(cv_data8_ridge6$resample$Rsquared))
+
+
+plot(error_data8_ridge$r_sq, type = 'l', col = 'red', main = "ERROR PLOT RIDGE", ylab = "Errors",xlab = "num variable", ylim = c(0,1))
+lines(error_data8_ridge$adj_r_sq,  col = 'green' )
+lines(error_data8_ridge$cv_r_sq,  col = 'blue')
+legend(1,0.8, legend = c("R Squared","Adj R Squared","R Squared CV"),
+       col = c("red","green","blue"), lty = 1:2, cex = 0.8)
+
+
+
+## LASSO
+
+#lasso
+x <- (data8$rating_weather)
+x <- cbind(data8$car_or_bus, x)
+data8_lasso1 <- lars(x, data8$id_android, type = 'lasso')
+
+x <- (data8$rating_weather)
+x <- cbind(data8$car_or_bus, x)
+x <- cbind(data8$speed, x)
+data8_lasso2 <- lars(x, data8$id_android, type = 'lasso')
+
+
+x <- (data8$rating_weather)
+x <- cbind(data8$car_or_bus, x)
+x <- cbind(data8$speed, x)
+x <- cbind(data8$time, x)
+data8_lasso3 <- lars(x, data8$id_android, type = 'lasso')
+
+
+x <- (data8$rating_weather)
+x <- cbind(data8$car_or_bus, x)
+x <- cbind(data8$speed, x)
+x <- cbind(data8$time, x)
+x <- cbind(data8$rating_bus, x)
+data8_lasso4 <- lars(x, data8$id_android, type = 'lasso')
+
+x <- (data8$rating_weather)
+x <- cbind(data8$car_or_bus, x)
+x <- cbind(data8$speed, x)
+x <- cbind(data8$time, x)
+x <- cbind(data8$rating_bus, x)
+x <- cbind(data8$distance, x)
+data8_lasso5 <- lars(x, data8$id_android, type = 'lasso')
+
+x <- (data8$rating_weather)
+x <- cbind(data8$car_or_bus, x)
+x <- cbind(data8$speed, x)
+x <- cbind(data8$time, x)
+x <- cbind(data8$rating_bus, x)
+x <- cbind(data8$distance, x)
+x <- cbind(data8$rating, x)
+data8_lasso6 <- lars(x, data8$id_android, type = 'lasso')
+
+
+
+cv_data8_lasso1 <- train(id_android ~ rating_weather + car_or_bus, data = data8, trControl = train_control, method = "lasso")
+cv_data8_lasso2 <- train(id_android ~ rating_weather + car_or_bus + speed, data = data8, trControl = train_control, method = "lasso")
+cv_data8_lasso3 <- train(id_android ~ rating_weather + car_or_bus + speed + time, data = data8, trControl = train_control, method = "lasso")
+cv_data8_lasso4 <- train(id_android ~ rating_weather + car_or_bus + speed + time + rating_bus, data = data8, trControl = train_control, method = "lasso")
+cv_data8_lasso5 <- train(id_android ~ rating_weather + car_or_bus + speed + time + rating_bus + distance, data = data8, trControl = train_control, method = "lasso")
+cv_data8_lasso6 <- train(id_android ~ rating_weather + car_or_bus + speed + time + rating_bus + distance + rating, data = data8, trControl = train_control, method = "lasso")
+
+
+error_data8_lasso <- data.frame("r_sq" = double(0), "cv_r_sq" = double(0) )
+error_data8_lasso <- add_row(error_data8_lasso, r_sq = max(data8_lasso1$R2), cv_r_sq = mean(cv_data8_lasso1$resample$Rsquared))
+error_data8_lasso <- add_row(error_data8_lasso, r_sq = max(data8_lasso2$R2), cv_r_sq = mean(cv_data8_lasso2$resample$Rsquared))
+error_data8_lasso <- add_row(error_data8_lasso, r_sq = max(data8_lasso3$R2), cv_r_sq = mean(cv_data8_lasso3$resample$Rsquared))
+error_data8_lasso <- add_row(error_data8_lasso, r_sq = max(data8_lasso4$R2), cv_r_sq = mean(cv_data8_lasso4$resample$Rsquared))
+error_data8_lasso <- add_row(error_data8_lasso, r_sq = max(data8_lasso5$R2), cv_r_sq = mean(cv_data8_lasso5$resample$Rsquared))
+error_data8_lasso <- add_row(error_data8_lasso, r_sq = max(data8_lasso6$R2), cv_r_sq = mean(cv_data8_lasso6$resample$Rsquared))
+
+
+#plot of r square, adjusted r square
+plot(error_data8_lasso$r_sq, type = 'l', col = 'red', main = "ERROR PLOT LASSO", ylab = "Errors",xlab = "num variable", ylim = c(0,1))
+lines(error_data8_lasso$cv_r_sq,  col = 'blue')
+legend(5,0.8, legend = c("R Squared","Adj R Squared","R Squared CV"),
+       col = c("red","green","blue"), lty = 1:2, cex = 0.8)
+
+
+## QUAD
+
+#transferring the current data into new data frame
+
+##adding square of each of the predictors to the data frame for quad regression
+data8$rating_weather_square <- data8$rating_weather^2
+data8$car_or_bus_square <- data8$car_or_bus^2
+data8$speed_square <- data8$speed^2
+data8$time_square <- data8$time^2
+data8$rating_bus_square <- data8$rating_bus^2
+data8$distance_square <- data8$distance^2
+data8$rating_square <- data8$rating^2
+
+
+#regression
+data8_quad1 <- lm(id_android ~ rating_weather + rating_weather_square, data = data8)
+data8_quad2 <- lm(id_android ~ rating_weather + rating_weather_square + car_or_bus + car_or_bus_square, data = data8)
+data8_quad3 <- lm(id_android ~ rating_weather + rating_weather_square + car_or_bus + car_or_bus_square + speed + speed_square, data = data8)
+data8_quad4 <- lm(id_android ~ rating_weather + rating_weather_square + car_or_bus + car_or_bus_square + speed + speed_square + time + time_square, data = data8)
+data8_quad5 <- lm(id_android ~ rating_weather + rating_weather_square + car_or_bus + car_or_bus_square + speed + speed_square + time + time_square + rating_bus + rating_bus_square, data = data8)
+data8_quad6 <- lm(id_android ~ rating_weather + rating_weather_square + car_or_bus + car_or_bus_square + speed + speed_square + time + time_square + rating_bus + rating_bus_square + distance + distance_square, data = data8)
+data8_quad7 <- lm(id_android ~ rating_weather + rating_weather_square + car_or_bus + car_or_bus_square + speed + speed_square + time + time_square + rating_bus + rating_bus_square + distance + distance_square + rating + rating_square, data = data8)
+
+
+#cross validation
+cv_data8_quad1 <- train(id_android ~ rating_weather + rating_weather_square, data = data8, trControl = train_control, method = "lm")
+cv_data8_quad2 <- train(id_android ~ rating_weather + rating_weather_square + car_or_bus + car_or_bus_square, data = data8, trControl = train_control, method = "lm")
+cv_data8_quad3 <- train(id_android ~ rating_weather + rating_weather_square + car_or_bus + car_or_bus_square + speed + speed_square, data = data8, trControl = train_control, method = "lm")
+cv_data8_quad4 <- train(id_android ~ rating_weather + rating_weather_square + car_or_bus + car_or_bus_square + speed + speed_square + time + time_square, data = data8, trControl = train_control, method = "lm")
+cv_data8_quad5 <- train(id_android ~ rating_weather + rating_weather_square + car_or_bus + car_or_bus_square + speed + speed_square + time + time_square + rating_bus + rating_bus_square, data = data8, trControl = train_control, method = "lm")
+cv_data8_quad6 <- train(id_android ~ rating_weather + rating_weather_square + car_or_bus + car_or_bus_square + speed + speed_square + time + time_square + rating_bus + rating_bus_square + distance + distance_square, data = data8, trControl = train_control, method = "lm")
+cv_data8_quad7 <- train(id_android ~ rating_weather + rating_weather_square + car_or_bus + car_or_bus_square + speed + speed_square + time + time_square + rating_bus + rating_bus_square + distance + distance_square + rating + rating_square, data = data8, trControl = train_control, method = "lm")
+
+
+#creating a new dataframe to store rsquare adjusted_rsquard and cv rsquared
+error_data8_quad <- data.frame("r_sq" = double(0), "adj_r_sq" = double(0), "cv_r_sq" = double(0))
+error_data8_quad <- add_row(error_data8_quad, r_sq = summary(data8_quad1)$r.squared, adj_r_sq = summary(data8_quad1)$adj.r.squared, cv_r_sq = mean(cv_data8_quad1$resample$Rsquared))
+error_data8_quad <- add_row(error_data8_quad, r_sq = summary(data8_quad2)$r.squared, adj_r_sq = summary(data8_quad2)$adj.r.squared, cv_r_sq = mean(cv_data8_quad2$resample$Rsquared))
+error_data8_quad <- add_row(error_data8_quad, r_sq = summary(data8_quad3)$r.squared, adj_r_sq = summary(data8_quad3)$adj.r.squared, cv_r_sq = mean(cv_data8_quad3$resample$Rsquared))
+error_data8_quad <- add_row(error_data8_quad, r_sq = summary(data8_quad4)$r.squared, adj_r_sq = summary(data8_quad4)$adj.r.squared, cv_r_sq = mean(cv_data8_quad4$resample$Rsquared))
+error_data8_quad <- add_row(error_data8_quad, r_sq = summary(data8_quad5)$r.squared, adj_r_sq = summary(data8_quad5)$adj.r.squared, cv_r_sq = mean(cv_data8_quad5$resample$Rsquared))
+error_data8_quad <- add_row(error_data8_quad, r_sq = summary(data8_quad6)$r.squared, adj_r_sq = summary(data8_quad6)$adj.r.squared, cv_r_sq = mean(cv_data8_quad6$resample$Rsquared))
+error_data8_quad <- add_row(error_data8_quad, r_sq = summary(data8_quad7)$r.squared, adj_r_sq = summary(data8_quad7)$adj.r.squared, cv_r_sq = mean(cv_data8_quad7$resample$Rsquared))
+
+
+#plot of r square, adjusted r square and r square cross-validation
+plot(error_data8_quad$r_sq, type = 'l', col = 'red', main = "ERROR PLOT QUAD", ylab = "Errors",xlab = "num variable", ylim = c(0,1))
+lines(error_data8_quad$adj_r_sq,  col = 'green' )
+lines(error_data8_quad$cv_r_sq,  col = 'blue')
+legend(1,0.8, legend = c("R Squared","Adj R Squared","R Squared CV"),
+       col = c("red","green","blue"), lty = 1:2, cex = 0.8)
+
+
+## RESPONSE
+
+#creating a new dataframe from auto df for RESPONSE SURFACE REGRESSION
+data8 <- data8
+
+data8_rspns1 <- rsm(id_android ~ SO(rating_weather, car_or_bus), data = data8)
+data8_rspns2 <- rsm(id_android ~ SO(rating_weather, car_or_bus, speed), data = data8)
+data8_rspns3 <- rsm(id_android ~ SO(rating_weather, car_or_bus, speed, time), data = data8)
+data8_rspns4 <- rsm(id_android ~ SO(rating_weather, car_or_bus, speed, time, rating_bus), data = data8)
+data8_rspns5 <- rsm(id_android ~ SO(rating_weather, car_or_bus, speed, time, rating_bus, distance), data = data8)
+data8_rspns6 <- rsm(id_android ~ SO(rating_weather, car_or_bus, speed, time, rating_bus, distance, rating), data = data8)
+
+
+
+error_data8_rspns <- data.frame("r_sq" = double(0), "adj_r_sq" = double(0))
+error_data8_rspns <- add_row(error_data8_rspns, r_sq = summary(data8_rspns1)$r.squared, adj_r_sq = summary(data8_rspns1)$adj.r.squared)
+error_data8_rspns <- add_row(error_data8_rspns, r_sq = summary(data8_rspns2)$r.squared, adj_r_sq = summary(data8_rspns2)$adj.r.squared)
+error_data8_rspns <- add_row(error_data8_rspns, r_sq = summary(data8_rspns3)$r.squared, adj_r_sq = summary(data8_rspns3)$adj.r.squared)
+error_data8_rspns <- add_row(error_data8_rspns, r_sq = summary(data8_rspns4)$r.squared, adj_r_sq = summary(data8_rspns4)$adj.r.squared)
+error_data8_rspns <- add_row(error_data8_rspns, r_sq = summary(data8_rspns5)$r.squared, adj_r_sq = summary(data8_rspns5)$adj.r.squared)
+error_data8_rspns <- add_row(error_data8_rspns, r_sq = summary(data8_rspns6)$r.squared, adj_r_sq = summary(data8_rspns6)$adj.r.squared)
+
+
+#plot of r square, adjusted r square
+plot(error_data8_rspns$r_sq, type = 'l', col = 'red', main = "ERROR PLOT RESPONSE SURFACE", ylab = "Errors", ylim = c(0.3,1))
+lines(error_data8_rspns$adj_r_sq,  col = 'green' )
+legend(5,0.8, legend = c("R Squared","Adj R Squared"),
+       col = c("red","green"), lty = 1:2, cex = 0.8)
+
+
+
+
 
