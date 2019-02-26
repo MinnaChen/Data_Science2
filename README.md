@@ -17,6 +17,10 @@ Scalation:
 * To compile:     sbt:Regression > compile
 * To run:         sbt:Regression > run
 
+The target variable should be the first column of the dataset provided.
+
+Path of the dataset should be provide properly to run the code
+
 R :
 * Copy and paste the dataset's .csv files on your local directory.
 * cd to the directory you have pasted all the files to.
@@ -26,16 +30,25 @@ R :
 
 # DataSet used: 
 
-* Auto MPG: https://archive.ics.uci.edu/ml/datasets/Auto+MPG 
-* Concrete Compressive: https://archive.ics.uci.edu/ml/datasets/Concrete+Compressive+Strength
-* Protein Tertiary: https://archive.ics.uci.edu/ml/datasets/Physicochemical+Properties+of+Protein+Tertiary+Structure
-* Forest Fires: https://archive.ics.uci.edu/ml/datasets/Forest+Fires
-* Bike Sharing: https://archive.ics.uci.edu/ml/datasets/Bike+Sharing+Dataset
-* Energy Effeciency: https://archive.ics.uci.edu/ml/datasets/Energy+efficiency
-*
-*
-*
-*
+#### Data set used for R and Scalation both:
+* Auto-Mpg
+* Computer Hardware
+* Concrete
+* Graduate Admission
+* Real Estate
+* Yacht
+* Gps Trajectories
+
+#### Dataset used only on R:
+* Airfoil
+* Crane Controller
+
+#### Dataset used only on Scalation:
+* Beijing PM
+* Red wine
+* White wine
+ 
+Note: All the data set has been taken from http://archive.ics.uci.edu/ml/datasets.html
 
 # Technology Used:
 * R
